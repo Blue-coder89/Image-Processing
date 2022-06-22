@@ -1,0 +1,110 @@
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+$dark-mode-color: #1A1A2E;
+$Shadow: 0 0 $input-btn-focus-blur $input-btn-focus-width rgba($dark-mode-color, $input-btn-focus-color-opacity); // shadow of the button on focus
+$border-color-on-focus: tint-color($dark-mode-color, 20%) !default; 
+$bg-image-on-focus: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$border-color-on-focus}'/></svg>") !default;
+  .Toggle {
+    width: $form-check-input-width;
+    height: $form-check-input-width;
+    margin-top: ($line-height-base - $form-check-input-width) * .5; // line-height minus check height
+    vertical-align: top;
+    background-color: $form-check-input-bg;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    border: $form-check-input-border;
+    appearance: none;
+    print-color-adjust: exact; // Keep themed appearance for print
+    @include transition($form-check-transition);
+  
+    &[type="checkbox"] {
+      @include border-radius($form-check-input-border-radius);
+    }
+  
+   
+    &:active {
+      filter: $form-check-input-active-filter;
+    }
+  
+    &:focus {
+      border-color: $dark-mode-color;
+      outline: 0;
+    }
+  
+    &:checked {
+      background-color: $dark-mode-color; // bacjkground color when button is in checked mode
+      border-color: $dark-mode-color;
+  
+      &[type="checkbox"] {
+        @if $enable-gradients {
+          background-image: escape-svg($form-check-input-checked-bg-image), var(--#{$variable-prefix}gradient);
+        } @else {
+          background-image: escape-svg($form-check-input-checked-bg-image);
+        }
+      }
+  
+   
+    }
+  
+    &[type="checkbox"]:indeterminate {
+      background-color: $form-check-input-indeterminate-bg-color;
+      border-color: $form-check-input-indeterminate-border-color;
+  
+      @if $enable-gradients {
+        background-image: escape-svg($form-check-input-indeterminate-bg-image), var(--#{$variable-prefix}gradient);
+      } @else {
+        background-image: escape-svg($form-check-input-indeterminate-bg-image);
+      }
+    }
+  
+    &:disabled {
+      pointer-events: none;
+      filter: none;
+      opacity: $form-check-input-disabled-opacity;
+    }
+  
+    // Use disabled attribute in addition of :disabled pseudo-class
+    // See: https://github.com/twbs/bootstrap/issues/28247
+    &[disabled],
+    &:disabled {
+      ~ .form-check-label {
+        opacity: $form-check-label-disabled-opacity;
+      }
+    }
+  }
+  
+
+  
+  //
+  // Switch
+  //
+  
+  .Switch {
+    padding-left:0;
+  
+    .Toggle {
+      width: $form-switch-width;
+      margin-left: 0px;
+      background-image: escape-svg($form-switch-bg-image);
+      background-position: left center;
+      @include border-radius($form-switch-border-radius);
+      @include transition($form-switch-transition);
+  
+      &:focus {
+        background-image: escape-svg($bg-image-on-focus);
+      }
+  
+      &:checked {
+        background-position: $form-switch-checked-bg-position;
+  
+        @if $enable-gradients {
+          background-image: escape-svg($form-switch-checked-bg-image), var(--#{$variable-prefix}gradient);
+        } @else {
+          background-image: escape-svg($form-switch-checked-bg-image);
+        }
+      }
+    }
+  }
+  
+
+  

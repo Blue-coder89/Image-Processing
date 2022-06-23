@@ -4,11 +4,11 @@ export default function Navbar(props) {
     const navStyle = {backgroundColor : Mode === 'dark'?'#1A1A2E':'#FAF1E6'}
     const textStyle = {color:Mode === 'dark'?'#FFFFFF':'#1A1A2E' }
   return (
-    <nav className=" h-[100px] flex flex-wrap justify-between p-[20px]" style={navStyle}>
+    <nav className="box-border h-[100px] flex flex-wrap justify-between pt-[20px] pl-[20px] pr-[0px] pb-[20px]" style={navStyle}>
       <h1 className="text-[50px] font-display" style = {textStyle}>EDIT</h1>
         <div className = "flex justify-evenly items-center w-[200px] ">
         <h5 style = {textStyle}>Dark</h5>
-        <div className="form-check Switch">
+        <div className="Switch">
         <input
           className="Toggle scale-[1.5]"
           type="checkbox"

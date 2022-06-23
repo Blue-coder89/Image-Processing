@@ -1,0 +1,78 @@
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+//
+// Base styles
+//
+
+.opt {
+    display: inline-block;
+    font-family: $btn-font-family;
+    font-weight: $btn-font-weight;
+    line-height: 17px; // changed the line height of the option button
+    color: $body-color;
+    text-align: center;
+    text-decoration: if($link-decoration == none, null, none);
+    white-space: $btn-white-space;
+    vertical-align: middle;
+    cursor: if($enable-button-pointers, pointer, null);
+    user-select: none;
+    background-color: transparent;
+    border: $btn-border-width solid transparent;
+    @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
+    @include transition($btn-transition);
+  
+    &:hover {
+      color: $body-color;
+      text-decoration: if($link-hover-decoration == underline, none, null);
+    }
+  
+    .opt-check:focus + &,
+    &:focus {
+      outline: 0;
+      box-shadow: $btn-focus-box-shadow;
+    }
+  
+    .opt-check:checked + &,
+    .opt-check:active + &,
+    &:active,
+    &.active {
+      @include box-shadow($btn-active-box-shadow);
+  
+      &:focus {
+        @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+      }
+    }
+  
+    &:disabled,
+    &.disabled,
+    fieldset:disabled & {
+      pointer-events: none;
+      opacity: $btn-disabled-opacity;
+      @include box-shadow(none);
+    }
+  }
+  
+  
+  //
+  // Alternate buttons
+  //
+  
+  // scss-docs-start btn-variant-loops
+  @each $color, $value in $theme-colors {
+    .opt-#{$color} {
+      @include button-variant($value, $value);
+    }
+  }
+  
+  @each $color, $value in $theme-colors {
+    .opt-outline-#{$color} {
+      @include button-outline-variant($value);
+    }
+  }
+  // scss-docs-end btn-variant-loops
+  
+  
+  //
+  // Link buttons
+  //
+  
+  // Make a button look and behave like a link

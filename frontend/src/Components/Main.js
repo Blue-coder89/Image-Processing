@@ -8,8 +8,8 @@ export default function Main(){
         }
     return (
     <>
-    <div className="flex sm:justify-center sm:items-center h-[853px] sm:pt-[0px] pt-[200px]">
-        <div className="w-[360px] sm:w-[1200px] sm:h-[800px] sm:border-2 sm:border-black sm:grid sm:grid-rows-[_1fr_8fr_1fr]">
+    <div className="flex sm:justify-center sm:items-center sm:h-[auto] sm:pt-[0px] pt-[100px]">
+         <div className="w-[360px] sm:w-[1200px] sm:h-[800px] sm:border-2 sm:border-black sm:grid sm:grid-rows-[_1fr_8fr_1fr]">
         <div className="border-1 sm:border-[red] flex justify-between">
             {/* Input */}
             <div className="relative w-[500px]">
@@ -35,6 +35,7 @@ export default function Main(){
             {OptionGroup}
         </div>
         </div>
+       
     </div>
     </>
     );

@@ -6,4 +6,4 @@ class Field(models.Model):
 
 
     def __str__(self): # The display name of the instance will be 'url' now and this is possible beacuse of this method
-        return "Image" + self.id
+        return "Image" + str(self.id)

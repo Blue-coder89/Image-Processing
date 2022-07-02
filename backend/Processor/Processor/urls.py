@@ -17,11 +17,14 @@ from django.contrib import admin
 from django.urls import path,include
 from rest_framework import routers
 from Input import views
+from Input.views import APIVIEW
 
 router = routers.DefaultRouter()
 router.register(r'Input', views.Fieldview, 'Input')
 
 urlpatterns = [
    path('admin/', admin.site.urls),
-    path('api/', include(router.urls))            
+    path('api/', include(router.urls)),
+    path('request_to_api/',APIVIEW.as_view()),
+    path('request_to_api/<int:pk>',APIVIEW.as_view()) 
 ]

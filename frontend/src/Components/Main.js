@@ -18,13 +18,20 @@ export default function Main() {
     // handle if the option is clicked
     switch(id){
         case 'Open':
-          await axios.put(`http://localhost:8000/api/Input/5/`, Url); // This updates the data at 5th position on the database
           try {
-            axios.get("http://localhost:8000/api/Input/4").then((response) => {
-              console.log(response.data.url);
+            await axios.put("http://localhost:8000/request_to_api/1",Url).then((response) => {
+              console.log(response.data.url)
+              if(response.data.url[0] === 'Image does not exists') alert('Image does not exists')
+            })
+          }catch(e){
+            console.log(e)
+          }
+          try {
+            await axios.get("http://localhost:8000/request_to_api/1").then((response) => {
+              console.log(response.data);
             })
           } catch (e) {
-            console.log("Hii");
+            console.log("error");
           }
             break;
         default:

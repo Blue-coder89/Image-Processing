@@ -89,8 +89,9 @@ class APIVIEW(APIView): # class based view of the above function based view
 
     def put(self,request,pk = None,*args,**kwargs):
         d = self.getData(pk)
+        
         serializer = testFieldserializer(d,data = request.data)
-        if(serializer.is_valid()):
+        if serializer.is_valid():
             serializer.save()
             json_data = JSONRenderer().render(serializer.data)
             return HttpResponse(json_data,content_type = 'application/json')

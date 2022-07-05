@@ -1,29 +1,7 @@
 import "../Styles/Option.scss";
 // import { useState } from "react";
-import swal from "sweetalert";
+// import swal from "sweetalert";
 export default function Option(props) {
-  
-
-  const checkSave = async () =>
-    // prompts the user in order to save image or not
-    {
-      await swal("SAVE OPTION", "WANT TO SAVE?", "warning", {
-        // this function demands a promise from us to click confirm
-        // once we click a button (confirm or cancel) this returns the value as true or null accordingly
-        buttons: {
-          cancel: "No",
-          confirm: "Yes",
-        },
-        closeOnClickOutside: false,
-        closeOnEsc: false,
-      }).then((Yes) => {
-        if (Yes) {
-          props.save();
-          swal("SUCCESS", "YOUR IMAGE IS DOWNLOADING", "success");
-        }
-      });
-    };
-
   // const toggleOpen = async () => {
   //   if (props.BrightnessLevel !== 0 || props.ThresholdValue !== 0) {
   //     await checkSave(); // prompting the user to save the image
@@ -32,32 +10,30 @@ export default function Option(props) {
   // };
   // console.log(props.isOpen)
   const menuClass = `dropdown-menu${props.isOpen ? " show" : ""}`;
-    // console.log(isOpen);
+  const menuClassB = `dropdown-menu${props.isOpenB ? " show" : ""}`;
+  // console.log(isOpen);
   let toRender = (
     <>
       <button
         type="button"
         className="opt opt-primary h-[60%] w-[70%] scale-[1.2]"
         onClick={async () => {
-          
-          console.log(props.isOpen)
           if (!props.DisableBrightness) {
-            if(props.BrightnessLevel !== 0) await checkSave();
-            props.reset()
+            if (props.BrightnessLevel !== 1) await props.checkSave();
             props.disableBrightness(true);
-          }
-          else if(props.isOpen === true)
-          {
+            props.resetBrightness();
+            props.setisOpenB(false);
+            props.handleClick(props.name);
+          } else if (props.isOpen === true) {
             // setisOpen(prev => !prev); // work on this plan
             // if(props.ThresholdValue !== 0)
             //   {
             //     await checkSave();
             //   }
-            let a = document.getElementById("dropdownMenuButton")
-              a.click()
-            
-            }
-          props.handleClick(props.name);
+            let a = document.getElementById("dropdownMenuButton");
+            a.click();
+            props.handleClick(props.name);
+          } else props.handleClick(props.name);
         }}
         disabled={props.disablestate}
       >
@@ -67,7 +43,68 @@ export default function Option(props) {
   );
   if (props.name === "Brightness Control")
     toRender = (
-      <button
+      <>
+        <div className="dropdown">
+          <button
+            className="btn btn-secondary dropdown-toggle box-content w-[140px] h-[40px]"
+            type="button"
+            data-toggle="dropdown"
+            // aria-haspopup="true"
+            onClick={async () => {
+              if (props.BrightnessLevel !== 1) {
+                await props.checkSave();
+                props.setisOpenB(false);
+                props.disableBrightness(true);
+                props.resetBrightness();
+              }
+              // props.disableBrightness(true);
+              else if (props.isOpenB === true) {
+                // setisOpen(prev => !prev); // work on this plan
+                // if(props.ThresholdValue !== 0)
+                //   {
+                //     await checkSave();
+                //   }
+                props.setisOpenB(false);
+                props.disableBrightness(true);
+              } else {
+                if (props.isOpen === true) {
+                  if (props.ThresholdValue !== 0) await props.checkSave();
+                  props.resetThreshold();
+                  props.setisOpen(false);
+                }
+                props.setisOpenB(true);
+                props.disableBrightness(false);
+              }
+              // props.reset()
+            }}
+            disabled={props.disablestate}
+          >
+            {props.name}
+          </button>
+          <div
+            className={`${menuClassB} pt-0 pb-0`}
+            aria-labelledby="dropdownMenuButton"
+          >
+            <div className="flex justify-center items-center mt-[3px]">
+              <h4 className="text-center font-normal mb-[0]">
+                {" "}
+                {props.BrightnessLevel}{" "}
+              </h4>
+            </div>
+            <div className="flex justify-center py-[5px]">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  props.handleClick(props.name);
+                }}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* <button
         className="btn btn-secondary box-content w-[140px] h-[40px]"
         type="button"
         // aria-haspopup="true"
@@ -91,7 +128,8 @@ export default function Option(props) {
         disabled={props.disablestate}
       >
         {props.name}
-      </button>
+      </button> */}
+      </>
     );
 
   if (props.name === "Threshold")
@@ -103,20 +141,20 @@ export default function Option(props) {
           id="dropdownMenuButton"
           data-toggle="dropdown"
           // aria-haspopup="true"
-          onClick={ async () => {
-             if(props.ThresholdValue !== 0)
-            {
-                 await checkSave()
-                props.resetThreshold();
-              }
-            else if (!props.DisableBrightness) {
-              if(props.BrightnessLevel !== 0) await checkSave();
-              props.reset()
+          onClick={async () => {
+            if (props.ThresholdValue !== 0) {
+              await props.checkSave();
+              props.resetThreshold();
+            } else if (!props.DisableBrightness) {
+              if (props.BrightnessLevel !== 0) await props.checkSave();
+              props.setisOpenB(false);
+              props.resetBrightness();
               props.disableBrightness(true);
             }
             // console.log("Hi");
-           props.setisOpen((prev) => {return !prev});
-
+            props.setisOpen((prev) => {
+              return !prev;
+            });
           }}
           disabled={props.disablestate}
         >
@@ -132,7 +170,7 @@ export default function Option(props) {
             placeholder="Threshold Value"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            value = {props.ThresholdValue}
+            value={props.ThresholdValue}
             onChange={(e) => {
               props.setThresholdValue(e.target.value);
             }}

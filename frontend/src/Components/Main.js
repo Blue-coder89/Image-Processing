@@ -5,17 +5,18 @@ import Image from "../Images/ProcessedImage.jpg";
 import "../Styles/Main.scss";
 import swal from "sweetalert";
 export default function Main() {
-  const [isbuttonactive, setisbuttonactive] = useState(false);
-  const [showImage, setshowImage] = useState(false);
-  const [BrightnessLevel, setBrightnessLevel] = useState(0);
+  const [isbuttonactive, setisbuttonactive] = useState(false); // to check which buttons should be enabled at a particular situation
+  // initially open is enabled and rest are diabled but as we click open and if url is correct then open will be disabled and rest of the buttons will be enabled
+  const [showImage, setshowImage] = useState(false); // if the url is correct then onlt image will be rendered
+  const [BrightnessLevel, setBrightnessLevel] = useState(1);
   const [ThresholdValue, setThresholdValue] = useState(0);
   const [enableBchange, setenableBchange] = useState(true); // to unable the change of brightness
   const [isOpen, setisOpen] = useState(false); // for dropdown buttons
-  const reset = () => {
-    setenableBchange((prev) => !prev);
-    setBrightnessLevel(0);
-  }; // this method will be called on clicking the brightness button in option.js
-
+  const [isOpenB, setisOpenB] = useState(false); // for dropdown buttons
+  const [lastSuccessfulClick , setlastSuccessfulClick] = useState(""); // to check which last click operation was successful
+  const resetBrightness = () => {
+    setBrightnessLevel(1);
+  };
   const resetThreshold = () => {
     setThresholdValue(0);
   };
@@ -39,6 +40,25 @@ export default function Main() {
     });
     a.click();
   };
+  const checkSave = async () =>
+  // prompts the user in order to save image or not
+  {
+    await swal("SAVE OPTION", "WANT TO SAVE?", "warning", {
+      // this function demands a promise from us to click confirm
+      // once we click a button (confirm or cancel) this returns the value as true or null accordingly
+      buttons: {
+        cancel: "No",
+        confirm: "Yes",
+      },
+      closeOnClickOutside: false,
+      closeOnEsc: false,
+    }).then((Yes) => {
+      if (Yes) {
+        saveImage();
+        swal("SUCCESS", "YOUR IMAGE IS DOWNLOADING", "success");
+      }
+    });
+  };
   const OptionGroup = arr.map((option) => {
     let disablestate = !isbuttonactive;
     if (option === "Open") disablestate = isbuttonactive;
@@ -48,146 +68,66 @@ export default function Main() {
         key={option}
         handleClick={handleOptionClick}
         disablestate={disablestate}
-        reset={reset}
         resetThreshold={resetThreshold}
-        save={saveImage}
+        resetBrightness={resetBrightness}
+        checkSave={checkSave}
         BrightnessLevel={BrightnessLevel}
         ThresholdValue={ThresholdValue}
         setThresholdValue={setThresholdValue}
-        isOpen = {isOpen}
-        setisOpen = {setisOpen}
-        disableBrightness = {setenableBchange}
-        DisableBrightness = {enableBchange}
+        isOpen={isOpen}
+        isOpenB={isOpenB}
+        setisOpen={setisOpen}
+        setisOpenB={setisOpenB}
+        disableBrightness={setenableBchange}
+        DisableBrightness={enableBchange}
       />
     );
   });
+
+
+  const ImageProcessing = async (id) => {
+    // calls the API with the image processing request
+
+    try {
+      await axios
+        .put("http://localhost:8000/request_to_api/1", {
+          ...data,
+          requestType: id,
+          relativebrightness: BrightnessLevel,
+          thresholdvalue: ThresholdValue,
+        })
+        .then((response) => {
+          if (response.data.error !== undefined) alert(response.data.error);
+          else {
+            setlastSuccessfulClick(id);
+            setisbuttonactive(true);
+            setshowImage(true);
+          }
+        });
+    } catch (e) {
+      swal("ERROR!!", e.message, "error");
+    }
+  };
+
   const [data, setData] = useState({ url: "" });
   async function handleOptionClick(id) {
     // handle if the option is clicked
-    switch (id) {
-      case "Open":
-        // document.location.reload();
-        if (data.url === "") {
-          swal("EMPTY!!", "Url should not be empty", "error");
-          break;
-        }
-
-        try {
-          await axios
-          .put("http://localhost:8000/request_to_api/1", {
-            ...data,
-              requestType: id,
-              relativebrightness: BrightnessLevel,
-              thresholdvalue: ThresholdValue,
-            })
-            .then((response) => {
-              if (response.data.error !== undefined)
-              alert(response.data.error);
-              else {
-                setisbuttonactive(true);
-                setshowImage(true);
-              }
-            });
-          } catch (e) {
-          swal("ERROR!!", e.message, "error");
-        }
-        break;
-      case "Reset":
-        // document.location.reload();
-        try {
-          await axios
-            .put("http://localhost:8000/request_to_api/1", {
-              ...data,
-              requestType: id,
-              relativebrightness: BrightnessLevel,
-              thresholdvalue: ThresholdValue,
-            })
-            .then((response) => {
-              if (response.data.url.error !== undefined)
-                alert(response.data.url.error);
-              else {
-                setisbuttonactive(true);
-                setshowImage(true);
-              }
-              // console.log(response.data.url);
-            });
-        } catch (e) {
-          swal("ERROR!!", e.message, "error");
-        }
-        break;
-      case "Black and White":
-        // document.location.reload();
-        try {
-          await axios
-            .put("http://localhost:8000/request_to_api/1", {
-              ...data,
-              requestType: id,
-              relativebrightness: BrightnessLevel,
-              thresholdvalue: ThresholdValue,
-            })
-            .then((response) => {
-              // console.log(response);
-              if (response.data.url.error !== undefined)
-                alert(response.data.url.error);
-              else {
-                setisbuttonactive(true);
-                setshowImage(true);
-              }
-              // console.log(response.data.url);
-            });
-        } catch (e) {
-          swal("ERROR!!", e.message, "error");
-        }
-        break;
-      case "Negative":
-        // document.location.reload();
-        try {
-          await axios
-            .put("http://localhost:8000/request_to_api/1", {
-              ...data,
-              requestType: id,
-              relativebrightness: BrightnessLevel,
-              thresholdvalue: ThresholdValue,
-            })
-            .then((response) => {
-              if (response.data.url.error !== undefined)
-                alert(response.data.url.error);
-              else {
-                setisbuttonactive(true);
-                setshowImage(true);
-              }
-              // console.log(response.data.url);
-            });
-        } catch (e) {
-          swal("ERROR!!", e.message, "error");
-        }
-        break;
-      case "Threshold":
-        // console.log(ThresholdValue);
-        try {
-          await axios
-            .put("http://localhost:8000/request_to_api/1", {
-              ...data,
-              requestType: id,
-              relativebrightness: BrightnessLevel,
-              thresholdvalue: ThresholdValue,
-            })
-            .then((response) => {
-              if (response.data.url.error !== undefined) {
-                swal("ERROR!!", response.data.url.error, "error");
-              } else {
-                setisbuttonactive(true);
-                setshowImage(true);
-              }
-            });
-        } catch (e) {
-          swal("ERROR!!", e.message, "error");
-        }
-        break;
-      default:
-        console.log(id);
+    // document.location.reload();
+    if (id === "Open" && data.url === "") {
+      swal("EMPTY!!", "Url should not be empty", "error");
+      return;
     }
+    // console.log(ThresholdValue);
+    else if (id === "Threshold" && ThresholdValue < 0) {
+      swal("ERROR!!", "negative values not allowed", "error");
+      return;
+    } else if (id === "Brightness Control" && BrightnessLevel === 0) {
+      return;
+    }
+
+    ImageProcessing(id);
   }
+
   return (
     <>
       <div className="flex sm:justify-center sm:items-center sm:h-[auto] sm:pt-[0px] pt-[100px]">
@@ -202,9 +142,55 @@ export default function Main() {
                 aria-label="Username"
                 aria-describedby="basic-addon1"
                 value={data.url}
-                onChange={(e) => {
-                  setisbuttonactive(false);
-                  setData({ ...data, url: e.target.value });
+                onChange={async (e) => {
+                  let str = e.target.value // stornt the current e.target.value
+                  if (isOpen) {
+                    if (ThresholdValue !== 0) {
+                     checkSave();
+                      setThresholdValue(0);
+                    }
+                    setisOpen(false);
+                    setlastSuccessfulClick("")
+                    
+                  } else if (isOpenB) {
+                    if (BrightnessLevel !== 1) {
+                      checkSave();
+                      resetBrightness();
+                    }
+                    setisOpenB(false);
+                    setenableBchange(true);
+                    setlastSuccessfulClick("")
+                 
+                  }
+                  else if(lastSuccessfulClick !== "" && lastSuccessfulClick !== "Open" && lastSuccessfulClick !== "Reset")
+                  {
+                    try{
+                      await axios.put("http://localhost:8000/request_to_api/1", {
+                      ...data,
+                      requestType: "Check Equal",
+                      relativebrightness: BrightnessLevel,
+                      thresholdvalue: ThresholdValue,
+                    }).then((response)=> {
+                      if(response.data.error !== undefined)
+                        {
+                          swal("ERROR!!",response.data.error,"error")          
+                        }
+                      else
+                        {
+                          if(response.data.status[0] === 'False')
+                            {
+                              checkSave();
+                            }
+                            setlastSuccessfulClick("")
+                          }
+                        })
+                      }
+                      catch(e){
+                        swal("ERROR!!",e.message,"error")
+                      }
+                    }
+                    setData({ ...data, url: str });
+                    setisbuttonactive(false);
                 }}
               />
             </div>
@@ -213,10 +199,12 @@ export default function Main() {
                 type="button"
                 className="btn btn-primary scale-[1.2]"
                 onClick={() => {
-                  reset();
                   resetThreshold();
                   saveImage();
                   setisOpen(false);
+                  resetBrightness();
+                  setisOpenB(false);
+                  setenableBchange(true);
                 }}
                 disabled={!isbuttonactive}
               >
@@ -233,11 +221,13 @@ export default function Main() {
               <input
                 type="range"
                 className="range rotate-90 scale-x-[3] scale-y-[1]"
-                min="-255"
-                max="255"
-                step="1"
+                min="0"
+                max="2"
+                step="0.1"
                 value={BrightnessLevel}
-                onChange={(e) => setBrightnessLevel(e.target.value)}
+                onChange={(e) => {
+                  setBrightnessLevel(e.target.value);
+                }}
                 disabled={enableBchange}
               ></input>
             </div>

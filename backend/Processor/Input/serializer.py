@@ -1,7 +1,7 @@
 from urllib.error import HTTPError
 from rest_framework import serializers
 from .models import Field
-from PIL import Image,UnidentifiedImageError
+from PIL import Image,UnidentifiedImageError,ImageEnhance
 import urllib.request
 from urllib.error import URLError
 
@@ -15,8 +15,8 @@ class Fieldserializer(serializers.ModelSerializer):
 class testFieldserializer(serializers.Serializer):
     url = serializers.CharField(max_length = 500)
     requestType = serializers.CharField(max_length = 20)
-    relativebrightness = serializers.IntegerField()
     thresholdvalue = serializers.IntegerField()
+    relativebrightness = serializers.DecimalField(max_digits=2,decimal_places=1)
 
     def blackAndWhite(self,im): # returns the black and white form of the image
         x,y = im.size 
@@ -36,18 +36,10 @@ class testFieldserializer(serializers.Serializer):
                 newPixel = (x,x,x) # updates it
                 im.putpixel((i,j),newPixel) # write pixel
         return im
-    def brightnessIncrease(self,im,ori,i):
-        x,y = im.size
-        for i in range(x):
-            for j in range(y):
-                pixel = im.getpixel((x,y))
-                r = pixel[0]
-                if(r != 0):
-                    r = min(r + i,255);
-                else:
-                    opixel = ori.getpixel((x,y))
-                    ro = opixel[0]
-                    
+
+    def checkEqual(self,im1,im2): # to check whether two images are equal or not
+        if(im1 == im2): return True
+        else: return False 
 
 
 
@@ -78,6 +70,7 @@ class testFieldserializer(serializers.Serializer):
         url = data.get('url')
         request = data.get('requestType')
         thresholdvalue = data.get('thresholdvalue')
+        relativebrightness = data.get('relativebrightness')
         ret = request.upper()
         if ret == "OPEN":
             try:
@@ -102,7 +95,6 @@ class testFieldserializer(serializers.Serializer):
             OriginalImage = OriginalImage.resize(newSize,Image.ANTIALIAS)
             OriginalImage.save("../../frontend/src/Images/OriginalImage.jpg")
             OriginalImage.save("../../frontend/src/Images/ProcessedImage.jpg")
-            print(OriginalImage.size)
         elif ret == "RESET":
             OriginalImage = Image.open("../../frontend/src/Images/OriginalImage.jpg")
             OriginalImage.save("../../frontend/src/Images/ProcessedImage.jpg")
@@ -118,4 +110,13 @@ class testFieldserializer(serializers.Serializer):
             ProcessedImage = Image.open("../../frontend/src/Images/ProcessedImage.jpg")
             ProcessedImage = self.threshold(ProcessedImage,thresholdvalue)
             ProcessedImage.save("../../frontend/src/Images/ProcessedImage.jpg")
+        elif ret == "BRIGHTNESS CONTROL":
+            ProcessedImage = Image.open("../../frontend/src/Images/ProcessedImage.jpg")
+            enhancer = ImageEnhance.Brightness(ProcessedImage)
+            ProcessedImage = enhancer.enhance(relativebrightness)
+            ProcessedImage.save("../../frontend/src/Images/ProcessedImage.jpg")
+        elif ret == "CHECK EQUAL": 
+            ProcessedImage = Image.open("../../frontend/src/Images/ProcessedImage.jpg")
+            OriginalImage = Image.open("../../frontend/src/Images/OriginalImage.jpg")
+            raise serializers.ValidationError({'status':self.checkEqual(ProcessedImage,OriginalImage)})
         return data

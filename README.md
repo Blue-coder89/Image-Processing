@@ -1,1 +1,1 @@
-This is a simple Image Processing Application
+### Instructions ###

@@ -1,6 +1,6 @@
 # Instructions #
 
-## Using this project on tour local machine ##
+## Using this project on our local machine ##
 
 1) Pull the repository.
 2) Open two terminals.
